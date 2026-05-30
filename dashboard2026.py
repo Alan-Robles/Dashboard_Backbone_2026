@@ -18,12 +18,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from main import create_ageb_layout, register_ageb_callbacks
 
 # Df a utilizar:
+url_clinicas = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/clinicas_con_final.csv"
+url_nse = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/df_nse.csv"
+url_ageb = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/AGEB_NSE_NL.geojson"
 
 # Nueva base de datos de backbone 2026
-backbone = pd.read_csv('/Users/alanrobles/Documents/ALAN/GEOSTATS/Codigo/clinicas_con_final.csv')
+backbone = pd.read_csv(url_clinicas)
 
 # Df utilizado para calcular el nse por ageb: censo + coneval + amai
-nse = pd.read_csv('/Users/alanrobles/Documents/ALAN/GEOSTATS/csv_nse/df_nse.csv')
+nse = pd.read_csv(url_nse)
 
 # Eliminar columnas del antiguo cálculo del nse en el df de backbone
 col_inicio = 'POBTOT'
