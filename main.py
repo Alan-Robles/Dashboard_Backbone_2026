@@ -10,7 +10,7 @@ url_ageb = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_202
 url_clinicas = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/clinicas_con_final.csv"
 
 # Cargar datos una sola vez (fuera de las funciones)
-gdf = gpd.read_file(url_ageb, engine="fiona")
+gdf = gpd.read_file(url_ageb)
 df_full = pd.read_csv(url_clinicas)
 df_nl = df_full[df_full["State"]=="Nuevo León"]
 
