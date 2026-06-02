@@ -11,7 +11,7 @@ url_clinicas = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone
 
 # Cargar datos una sola vez (fuera de las funciones)
 gdf = gpd.read_file(url_ageb)
-df_full = pd.read_csv(url_clinicas')
+df_full = pd.read_csv(url_clinicas)
 df_nl = df_full[df_full["State"]=="Nuevo León"]
 
 def create_ageb_layout():
