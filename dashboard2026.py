@@ -20,7 +20,7 @@ from main import create_ageb_layout, register_ageb_callbacks
 # Df a utilizar:
 url_clinicas = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/clinicas_con_final.csv"
 url_nse = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/df_nse.csv"
-url_ageb = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/AGEB_NSE_NL.geojson"
+url_ageb = "https://raw.githubusercontent.com/Alan-Robles/Dashboard_Backbone_2026/main/data/AGEBS_NSE_NL.geojson"
 
 # Nueva base de datos de backbone 2026
 backbone = pd.read_csv(url_clinicas)
