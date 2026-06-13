@@ -149,9 +149,10 @@ def load_data():
     _data_loaded = True
 
 
-# Cargar datos al primer request (evita hacerlo en import-time)
-@server.before_request
-def ensure_data_loaded():
+# Cargar datos en startup dentro del app context de Flask
+# Esto ocurre DESPUÉS de que Gunicorn liga el puerto, por lo que
+# el worker ya está activo y no hay riesgo de timeout en el bind.
+with server.app_context():
     load_data()
 
 
@@ -572,7 +573,9 @@ app.index_string = """<!DOCTYPE html>
 </body>
 </html>"""
 
-app.layout = html.Div([
+def serve_layout():
+    """Genera el layout en cada carga de página, cuando los datos ya están listos."""
+    return html.Div([
     html.Div([
         html.Div(style={'height': '4px', 'background': 'linear-gradient(90deg, #F2C12E 0%, #8B8B2E 40%, #4A5E3A 100%)'}),
         html.Div([
@@ -595,7 +598,7 @@ app.layout = html.Div([
                                'color': '#7A7060', 'textTransform': 'uppercase',
                                'marginBottom': '3px', 'display': 'block'}),
                     dcc.Dropdown(id='estado-filter',
-                                 options=[{'label': 'Todos', 'value': 'Todos'}],
+                                 options=[{'label': e, 'value': e} for e in estados],
                                  value='Todos', clearable=False,
                                  style={'width': '180px', 'fontSize': '13px'})
                 ], style={'marginRight': '16px'}),
@@ -604,7 +607,7 @@ app.layout = html.Div([
                                'color': '#7A7060', 'textTransform': 'uppercase',
                                'marginBottom': '3px', 'display': 'block'}),
                     dcc.Dropdown(id='nse-filter',
-                                 options=[{'label': 'Todos', 'value': 'Todos'}],
+                                 options=[{'label': n, 'value': n} for n in nse_options],
                                  value='Todos', clearable=False,
                                  style={'width': '130px', 'fontSize': '13px'})
                 ], style={'marginRight': '16px'}),
@@ -613,7 +616,7 @@ app.layout = html.Div([
                                'color': '#7A7060', 'textTransform': 'uppercase',
                                'marginBottom': '3px', 'display': 'block'}),
                     dcc.Dropdown(id='especialidad-filter',
-                                 options=[{'label': 'Todos', 'value': 'Todos'}],
+                                 options=[{'label': esp, 'value': esp} for esp in especialidades],
                                  value='Todos', clearable=False,
                                  style={'width': '200px', 'fontSize': '13px'})
                 ]),
@@ -635,33 +638,18 @@ app.layout = html.Div([
         ])
     ], style={'background': '#EDE8DC', 'borderBottom': '1px solid #DDD8CC', 'padding': '0 24px'}),
 
-    # Store para los filtros de dropdowns (se pueblan vía callback tras cargar datos)
-    dcc.Store(id='_dummy'),
     html.Div(id='dashboard-content',
              style={'padding': '20px 24px', 'minHeight': 'calc(100vh - 120px)'})
 
-], style={'background': '#F5F2EB', 'minHeight': '100vh'})
+    ], style={'background': '#F5F2EB', 'minHeight': '100vh'})
+
+
+app.layout = serve_layout
 
 
 # ==========================
 # Callbacks
 # ==========================
-
-# Poblar dropdowns la primera vez que el layout se renderiza
-@app.callback(
-    Output('estado-filter', 'options'),
-    Output('nse-filter', 'options'),
-    Output('especialidad-filter', 'options'),
-    Input('_dummy', 'data')
-)
-def populate_dropdowns(_):
-    load_data()
-    return (
-        [{'label': e, 'value': e} for e in estados],
-        [{'label': n, 'value': n} for n in nse_options],
-        [{'label': esp, 'value': esp} for esp in especialidades]
-    )
-
 
 @app.callback(
     Output('dashboard-content', 'children'),
