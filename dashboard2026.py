@@ -149,10 +149,11 @@ def load_data():
     _data_loaded = True
 
 
-# Cargar datos en startup dentro del app context de Flask
-# Esto ocurre DESPUÉS de que Gunicorn liga el puerto, por lo que
-# el worker ya está activo y no hay riesgo de timeout en el bind.
-with server.app_context():
+# Los datos se cargan en el post_fork hook de gunicorn.conf.py,
+# DESPUÉS de que el puerto ya está ligado. Aquí solo garantizamos
+# que si se ejecuta localmente (sin gunicorn) también funcione.
+import os
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or __name__ == '__main__':
     load_data()
 
 
@@ -575,6 +576,7 @@ app.index_string = """<!DOCTYPE html>
 
 def serve_layout():
     """Genera el layout en cada carga de página, cuando los datos ya están listos."""
+    load_data()  # no-op si ya se cargó en post_fork
     return html.Div([
     html.Div([
         html.Div(style={'height': '4px', 'background': 'linear-gradient(90deg, #F2C12E 0%, #8B8B2E 40%, #4A5E3A 100%)'}),
